@@ -1,13 +1,8 @@
 
 import 'package:advert_list_demo/screens/advert/advert_page.dart';
-import 'package:advert_list_demo/state/advert/advert_cubit.dart';
 import 'package:advert_list_demo/state/connection/connection_cubit.dart';
-import 'package:advert_list_demo/state_emitter/home_cubit_state_emitter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_deriv_bloc_manager/bloc_managers/base_bloc_manager.dart';
-import 'package:flutter_deriv_bloc_manager/bloc_managers/bloc_manager.dart';
-import 'package:flutter_deriv_bloc_manager/event_dispatcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +28,10 @@ class MyApp extends StatelessWidget {
       // is not restarted.
       primarySwatch: Colors.blue,
     ),
-    home: const MyHomePage(title: 'Sample Demo'),
+    home: BlocProvider(
+      create: (context) => ConnectionCubit(),
+      child: const MyHomePage(title: 'Sample Demo'),
+    ) ,
   );
 }
 
@@ -56,39 +54,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    // _connectionCubit.close();
     super.dispose();
+    BlocProvider.of<ConnectionCubit>(context).disConnect();
 
-    BlocManager.instance
-        .fetch<ConnectionCubit>().api!.disconnect();
   }
 
   void initializeBlocs() {
-    // Register Blocs.
-
-    // BlocManager.instance.register(HomeCubit());
-    BlocManager.instance.register(AdvertCubit());
-    BlocManager.instance.register(ConnectionCubit());
-
-    // Register State Emitters.
-    EventDispatcher(BlocManager.instance)
-        .register<AdvertCubit, HomeCubitStateEmitter>(
-            (BaseBlocManager blocManager) =>
-            HomeCubitStateEmitter(blocManager));
-    // ..register<ContractCubit>(
-    //    (BaseBlocManager blocManager) => HomeCubitStateEmitter(blocManager));
+    BlocProvider.of<ConnectionCubit>(context).connect();
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
-        title: const Text('API Sample App'),
+        title: const Text('Deriv P2P Sample App'),
       ),
       body: BlocBuilder<ConnectionCubit, ConnectionCubitState>(
-          bloc: BlocManager.instance.fetch<ConnectionCubit>(),
           builder: (BuildContext context, ConnectionCubitState state) {
             if (state is Connected) {
-              return const AdvertPage();
+              return const Advert();
             } else if(state is Disconnected){
               return _buildCenterText('Disconnected');
             }
