@@ -46,14 +46,14 @@ class TimeUtil {
     }
   }
 
-  getTimeFromSeconds(int seconds) {
-    Duration d = Duration(seconds: seconds);
-    return d
-        .toString()
-        .split('.')
-        .first
-        .padLeft(8, "0");
-  }
+  // getTimeFromSeconds(int seconds) {
+  //   Duration d = Duration(seconds: seconds);
+  //   return d
+  //       .toString()
+  //       .split('.')
+  //       .first
+  //       .padLeft(8, "0");
+  // }
 
   String? formatDate(String date, DateFormat inputFormat,
       DateFormat outputFormat) {

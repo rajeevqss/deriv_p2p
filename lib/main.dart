@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       primarySwatch: Colors.blue,
     ),
     home: BlocProvider(
-      create: (context) => ConnectionCubit(),
+      create: (BuildContext context) => ConnectionCubit(),
       child: const MyHomePage(title: 'Sample Demo'),
     ) ,
   );
@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
-        title: const Text('Deriv P2P Sample App'),
+        title: const Text('API Sample App'),
       ),
       body: BlocBuilder<ConnectionCubit, ConnectionCubitState>(
           builder: (BuildContext context, ConnectionCubitState state) {

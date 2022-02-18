@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:advert_list_demo/state/advert/advert_cubit.dart';
 import 'package:advert_list_demo/state/advert/models/advert_response.dart';
 import 'package:advert_list_demo/state/connection/connection_cubit.dart';
@@ -11,13 +13,11 @@ class Advert extends StatelessWidget {
   const Advert({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
+  Widget build(BuildContext context) => BlocProvider(
+      create: (BuildContext context) =>
           AdvertCubit(api: BlocProvider.of<ConnectionCubit>(context).api),
       child: const AdvertPage(),
     );
-  }
 }
 
 class AdvertPage extends StatefulWidget {
@@ -32,17 +32,28 @@ class _AdvertPageState extends State<AdvertPage> {
   final ScrollController _scrollController = ScrollController();
   int count = 0;
   String? _selectedValue = 'buy';
+  StreamSubscription<void>? _periodicFetchdata;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     BlocProvider.of<AdvertCubit>(context).getAdvertList(0, _selectedValue!);
+    _periodicFetchdata?.cancel();
+    _periodicFetchdata = Stream<void>.periodic(
+      const Duration(minutes: 1),
+    ).listen((_) {
+      BlocProvider.of<AdvertCubit>(context).getAdvertList(0, _selectedValue!);
+    });
   }
-
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _periodicFetchdata?.cancel();
+  }
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       children: [
         Container(
             margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
@@ -67,6 +78,7 @@ class _AdvertPageState extends State<AdvertPage> {
                 width: 50,
               ),
               DropdownButton(
+                key: ValueKey('dropdown'),
                 hint: const Text('Please select type'),
                 // Not necessary for Option 1
                 value: _selectedValue,
@@ -85,7 +97,7 @@ class _AdvertPageState extends State<AdvertPage> {
                         ))
                     .toList(),
               ),
-              Divider(),
+              const Divider(),
             ],
           ),
         ),
@@ -123,40 +135,44 @@ class _AdvertPageState extends State<AdvertPage> {
                   // }
                   print(
                       '-----------------advert page data -${state.advertList?.length}-------------------');
-                  var time = list[index].createdTime!.toInt();
-                  var date = DateTime.fromMillisecondsSinceEpoch(time*1000);
+                  final int time = list[index].createdTime!.toInt();
+                  final DateTime date = DateTime.fromMillisecondsSinceEpoch(time*1000);
                   return Container(
                     margin: const EdgeInsets.all(8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text('Id: ${list[index].id}'),
                         Text(
-                            'Advertise Name: ${list[index].advertiserDetails?.name!}'),
+                            'Advertise Name: ${list[index].advertiserDetails?.name}'),
+                        Text('Advertise order id: ${list[index].advertiserDetails?.id}'),
+                        Text('Advertise completed order count: ${list[index].advertiserDetails?.completedOrdersCount}'),
+                        Text('Advertise total completion rate: ${list[index].advertiserDetails?.totalCompletionRate}'),
                         Text('Date: ${TimeUtil().formatDateTime(date,TimeUtil.outputLogHistoryDateFormat)}'),
                         Text('Country: ${list[index].country}'),
                         Text('Currency: ${list[index].accountCurrency}'),
                         Text('Price: ${list[index].priceDisplay}'),
+                        Text('rate: ${list[index].rateDisplay}'),
+                        Text('max order amount: ${list[index].maxOrderAmountLimitDisplay}'),
+                        Text('min order amount: ${list[index].minOrderAmountLimitDisplay}'),
                         Text('Type: ${list[index].counterpartyType}'),
+                        Text('Payment method: ${list[index].paymentMethod}'),
+                        Text('local currency: ${list[index].localCurrency}'),
                         Text('Description: ${list[index].description}'),
                       ],
                     ),
                   );
                 },
-                separatorBuilder: (buildContext, index) {
-                  return const Divider();
-                },
+                separatorBuilder: (BuildContext buildContext, index) => const Divider(),
                 itemCount: list.length);
           }),
         ),
       ],
     );
-  }
 
-  Widget _search() {
-    return BlocConsumer<AdvertCubit, AdvertCubitState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        return Stack(
+  Widget _search() => BlocConsumer<AdvertCubit, AdvertCubitState>(
+      listener: (BuildContext context, AdvertCubitState state) {},
+      builder: (BuildContext context, AdvertCubitState state) => Stack(
           alignment: const Alignment(0.7, 0),
           children: [
             TextFormField(
@@ -215,10 +231,8 @@ class _AdvertPageState extends State<AdvertPage> {
               ),
             ),
           ],
-        );
-      },
+        ),
     );
-  }
 
   void _showFilterPopupMenu(BuildContext context, Offset offset) async {
     double left = offset.dx;
