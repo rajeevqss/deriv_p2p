@@ -1,4 +1,4 @@
-import 'package:advert_list_demo/state/advert/models/advert_response.dart';
+import 'package:advert_list_demo/features/advert_list/models/advert_response.dart';
 
 final List<AdvertList> advertList = <AdvertList>[
   AdvertList(

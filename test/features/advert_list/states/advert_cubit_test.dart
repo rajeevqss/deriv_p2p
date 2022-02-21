@@ -1,14 +1,11 @@
-import 'package:advert_list_demo/state/advert/advert_cubit.dart';
-import 'package:advert_list_demo/state/advert/models/advert_response.dart';
+import 'package:advert_list_demo/features/advert_list/models/advert_response.dart';
+import 'package:advert_list_demo/features/advert_list/states/advert_cubit.dart';
+import 'package:advert_list_demo/features/advert_list/states/advert_cubit_state.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flutter_deriv_api/api/api_initializer.dart';
 
-import '../../sample_data/data.dart';
-
-
-
+import 'data.dart';
 
 class MockAdvertCubit extends MockCubit<AdvertCubitState>
     implements AdvertCubit {}
@@ -33,7 +30,7 @@ void main() {
             AdvertCubitInitialState(),
             AdvertCubitLoadingState(),
             AdvertCubitLoadedState(advertList: advertList),
-              //assets: assets,
+            //assets: assets,
           ],
         ),
 
@@ -64,7 +61,7 @@ void main() {
 
     blocTest<AdvertCubit, AdvertCubitState>(
       'captures exceptions.',
-      build: () => AdvertCubit(),
+      build: () => AdvertCubit(advertCubitRepository: null),
       act: (AdvertCubit cubit) => cubit.addError(exception),
       errors: () => <Matcher>[equals(exception)],
     );

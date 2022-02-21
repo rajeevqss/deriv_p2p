@@ -1,4 +1,4 @@
-part of 'advert_cubit.dart';
+import 'package:advert_list_demo/features/advert_list/models/advert_response.dart';
 
 abstract class AdvertCubitState {}
 
@@ -27,6 +27,16 @@ class AdvertCubitLoadedState extends AdvertCubitState {
         p2pAdvertList: p2pAdvertList1 ?? p2pAdvertList,
         searchData: searchData1 ?? searchData);
   }
+
+  @override
+  String toString() => 'Home Cubit Loaded State';
+}
+
+class AdvertCubitLoadedStateForSearch extends AdvertCubitState {
+  // /// Initializes
+  AdvertCubitLoadedStateForSearch({this.advertList});
+
+  final List<AdvertList>? advertList;
 
   @override
   String toString() => 'Home Cubit Loaded State';

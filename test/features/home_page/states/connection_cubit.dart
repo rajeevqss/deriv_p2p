@@ -1,5 +1,6 @@
-import 'package:advert_list_demo/state/advert/advert_cubit.dart';
-import 'package:advert_list_demo/state/connection/connection_cubit.dart';
+import 'package:advert_list_demo/features/advert_list/states/advert_cubit.dart';
+import 'package:advert_list_demo/features/advert_list/states/advert_cubit_state.dart';
+import 'package:advert_list_demo/features/home_page/state/connection/connection_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

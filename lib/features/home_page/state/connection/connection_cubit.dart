@@ -6,26 +6,24 @@ import 'package:flutter_deriv_api/services/connection/api_manager/connection_inf
 
 part 'connection_cubit_state.dart';
 
-class ConnectionCubit extends Cubit<ConnectionCubitState>
-{
+class ConnectionCubit extends Cubit<ConnectionCubitState> {
   ConnectionCubit() : super(InitialConnectionState());
   BinaryAPI? _api;
   final UniqueKey _uniqueKey = UniqueKey();
-   Duration _callTimeOut = Duration(seconds: 10);
+  final Duration _callTimeOut = const Duration(seconds: 10);
 
   BinaryAPI? get api => _api;
 
-  void connect()  {
+  void connect() {
     openWebsocket();
   }
-
 
   void disConnect() {
     api?.disconnect();
   }
 
   Future<void> openWebsocket() async {
-    _api=BinaryAPI(UniqueKey());
+    _api = BinaryAPI(UniqueKey());
     await api?.disconnect().timeout(_callTimeOut);
     await api?.connect(
       ConnectionInformation(
@@ -34,15 +32,11 @@ class ConnectionCubit extends Cubit<ConnectionCubitState>
         endpoint: 'frontend.binaryws.com',
       ),
       onDone: (UniqueKey key) {
-        if (_uniqueKey == key) {
-          api!.disconnect();
-          emit(Disconnected());
-        }
+        api!.disconnect();
+        emit(Disconnected());
       },
       onOpen: (UniqueKey key) {
-       // if (_uniqueKey == key) {
-          emit(Connected());
-       // }
+        emit(Connected());
       },
       onError: (UniqueKey key) {
         if (_uniqueKey == key) {
@@ -51,8 +45,7 @@ class ConnectionCubit extends Cubit<ConnectionCubitState>
       },
     );
 
-    final PingResponse response=await api!.call<PingResponse>(request: PingRequest());
-
-    print('--------------${response.toJson()}');
+    final PingResponse response =
+        await api!.call<PingResponse>(request: const PingRequest());
   }
 }
